@@ -24,6 +24,10 @@ jobs:
 
       - name: Create tag
         run: |
+          # setup keys
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
           push_tag() {
             local tag_to_push=$1
             git tag "$tag_to_push" || { echo "Failed to create tag $tag_to_push"; exit 1; }
