@@ -15,6 +15,11 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Install SSH Client
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.GIT_TOKEN }}
+      
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -22,11 +27,6 @@ jobs:
 
       - name: Create tag
         run: |
-          # setup keys
-          mkdir -p ~/.ssh
-          echo "${{ secrets.GIT_TOKEN }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          
           push_tag() {
             local tag_to_push=$1
             git tag "$tag_to_push" || { echo "Failed to create tag $tag_to_push"; exit 1; }
