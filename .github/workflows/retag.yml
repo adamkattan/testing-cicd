@@ -1,4 +1,4 @@
-name: Retag this repository
+name: Create tag
 
 # Execute this workflow after merging to *main*
 on:
@@ -13,14 +13,16 @@ jobs:
     if: github.event.pull_request.merged
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GIT_TOKEN }}
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Retag
+      - name: Create tag
         run: |
           push_tag() {
             local tag_to_push=$1
@@ -31,8 +33,6 @@ jobs:
           retag_major() {
             local pushed_tag_major_version=$1
 
-            # Delete corresponding major version tag of your pushed tag
-            # if vX tag does not exist, then the entire job fails
             git tag -d "$pushed_tag_major_version" || { echo "Failed to delete tag $pushed_tag_major_version"; exit 1; }
             git push origin --delete "$pushed_tag_major_version" || { echo "Failed to push delete for tag $pushed_tag_major_version"; exit 1; }
             echo "tag: $tag_to_push was pushed_tag_major_version successfully."
@@ -52,10 +52,11 @@ jobs:
           latest_tag=$(git tag | sort -Vr | head -n 1)
           echo "latest tag: $latest_tag"
 
-          major_slice=$(echo "$latest_tag" | cut -d '.' -f 1)
-          minor_slice=$(echo "$latest_tag" | cut -d '.' -f 2)
-          patch_slice=$(echo "$latest_tag" | cut -d '.' -f 3)
-          new_tag=0
+          # Set default values if any part is missing
+          major_slice=${major_slice:-0}
+          minor_slice=${minor_slice:-0}
+          patch_slice=${patch_slice:-0}
+          echo "slices: $major_slice.$minor_slice.$patch_slice"
 
           case $label in
             patch)
@@ -76,8 +77,6 @@ jobs:
               echo "Please specify label, choose only ONE from: major, minor, patch."
               ;;
           esac
-
-          echo "new tag: $new_tag"
 
       - name: Print tags
         run: git ls-remote --tags origin
