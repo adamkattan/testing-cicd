@@ -12,8 +12,6 @@ jobs:
   retag:
     if: github.event.pull_request.merged
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GIT_TOKEN }}
     permissions:
       contents: write
     steps:
@@ -24,6 +22,10 @@ jobs:
 
       - name: Create tag
         run: |
+          # setup keys
+          echo "${{ secrets.GIT_TOKEN }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
           push_tag() {
             local tag_to_push=$1
             git tag "$tag_to_push" || { echo "Failed to create tag $tag_to_push"; exit 1; }
