@@ -55,8 +55,13 @@ jobs:
           major_slice=$(echo "$latest_tag" | cut -d '.' -f 1)
           minor_slice=$(echo "$latest_tag" | cut -d '.' -f 2)
           patch_slice=$(echo "$latest_tag" | cut -d '.' -f 3)
+
+          # Set default values if any part is missing
+          major_slice=${major_slice:-0}
+          minor_slice=${minor_slice:-0}
+          patch_slice=${patch_slice:-0}
           new_tag=0
-          
+
           echo "slices: $major_slice.$minor_slice.$patch_slice"
 
           case $label in
