@@ -23,6 +23,7 @@ jobs:
       - name: Create tag
         run: |
           # setup keys
+          mkdir -p ~/.ssh
           echo "${{ secrets.GIT_TOKEN }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           
