@@ -1,0 +1,78 @@
+name: Retag this repository
+
+# Execute this workflow after merging to *main*
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  retag:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Retag
+        run: |
+          push_tag() {
+            local tag_to_push=$1
+            git tag "$tag_to_push" || { echo "Failed to create tag $tag_to_push"; exit 1; }
+            git push origin "$tag_to_push" || { echo "Failed to push tag $tag_to_push"; exit 1; }
+            echo "tag: $tag_to_push was pushed successfully."
+          }
+          retag_major() {
+            local pushed_tag_major_version=$1
+
+            # Delete corresponding major version tag of your pushed tag
+            # if vX tag does not exist, then the entire job fails
+            git tag -d "$pushed_tag_major_version" || { echo "Failed to delete tag $pushed_tag_major_version"; exit 1; }
+            git push origin --delete "$pushed_tag_major_version" || { echo "Failed to push delete for tag $pushed_tag_major_version"; exit 1; }
+            echo "tag: $tag_to_push was pushed_tag_major_version successfully."
+
+            push_tag $pushed_tag_major_version
+          }
+
+          pr_number=$(echo $GITHUB_REF | awk -F'/' '{print $3}')
+          label=$(gh api --jq '.labels.[].name' /repos/Tricentis-qTest/devops-templates/pulls/$pr_number)
+          
+          echo "Triggering actor - ${{ github.triggering_actor }}"
+          echo "Labels: $label"
+
+          # this will get the latest_tag
+          latest_tag=$(git tag | sort -Vr | head -n 1)
+          echo "latest tag: $latest_tag"
+
+          major_slice=$(echo "$latest_tag" | cut -d '.' -f 1)
+          minor_slice=$(echo "$latest_tag" | cut -d '.' -f 2)
+          patch_slice=$(echo "$latest_tag" | cut -d '.' -f 3)
+          new_tag=0
+
+          case $label in
+            patch)
+              new_tag="$major_slice.$minor_slice.$((patch_slice + 1))"
+              push_tag $new_tag
+              retag_major $major_slice
+              ;;
+            minor)
+              new_tag="$major_slice.$((minor_slice + 1)).0"
+              push_tag $new_tag
+              retag_major $major_slice
+              ;;
+            major)
+              new_tag="$((major_slice + 1)).0.0"
+              push_tag $new_tag
+              ;;
+            *)
+              echo "Please specify label, choose only ONE from: major, minor, patch."
+              ;;
+          esac
+
+          echo "new tag: $new_tag"
+
+      - name: Print tags
+        run: git ls-remote --tags origin
