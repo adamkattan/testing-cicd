@@ -50,11 +50,13 @@ jobs:
           # this will get the latest_tag
           latest_tag=$(git tag | sort -Vr | head -n 1)
           echo "latest tag: $latest_tag"
-
+          
+          latest_tag="${latest_tag#v}"
           major_slice=$(echo "$latest_tag" | cut -d '.' -f 1)
           minor_slice=$(echo "$latest_tag" | cut -d '.' -f 2)
           patch_slice=$(echo "$latest_tag" | cut -d '.' -f 3)
           new_tag=0
+          
           echo "slices: $major_slice.$minor_slice.$patch_slice"
 
           case $label in
