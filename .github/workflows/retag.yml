@@ -64,14 +64,14 @@ jobs:
 
           case $label in
             patch)
-              new_tag="$major_slice.$minor_slice.$((patch_slice + 1))"
+              new_tag="v$major_slice.$minor_slice.$((patch_slice + 1))"
               push_tag $new_tag
-              retag_major $major_slice
+              retag_major "v$major_slice"
               ;;
             minor)
-              new_tag="$major_slice.$((minor_slice + 1)).0"
+              new_tag="v$major_slice.$((minor_slice + 1)).0"
               push_tag $new_tag
-              retag_major $major_slice
+              retag_major "v$major_slice"
               ;;
             major)
               new_tag="v$((major_slice + 1))"
