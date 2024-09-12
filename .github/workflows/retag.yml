@@ -68,7 +68,7 @@ jobs:
               retag_major $major_slice
               ;;
             major)
-              new_tag="$((major_slice + 1)).0.0"
+              new_tag="v$((major_slice + 1))"
               push_tag $new_tag
               ;;
             *)
