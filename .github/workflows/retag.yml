@@ -38,7 +38,7 @@ jobs:
           }
 
           pr_number=$(echo $GITHUB_REF | awk -F'/' '{print $3}')
-          label=$(gh api --jq '.labels.[].name' /repos/Tricentis-qTest/devops-templates/pulls/$pr_number)
+          label=$(gh api --jq '.labels.[].name' /repos/adamkattan/testing-cicd/pulls/$pr_number)
           
           echo "Triggering actor - ${{ github.triggering_actor }}"
           echo "Labels: $label"
