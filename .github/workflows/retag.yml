@@ -40,8 +40,8 @@ jobs:
             push_tag $pushed_tag_major_version
           }
 
-          echo ${{ toJson(github.event.pull_request.head) }} 
-          label=$(echo ${{ toJson(github.event.pull_request.head) }} | jq -r 'labels.[0].name')
+          echo ${{ toJson(github.event.pull_request) }} 
+          label=$(echo ${{ toJson(github.event.pull_request) }} | jq -r 'labels.[0].name')
 
           pr_number=$(echo ${{ github.event.pull_request.head.ref }} | awk -F'/' '{print $3}')
           echo $pr_number
