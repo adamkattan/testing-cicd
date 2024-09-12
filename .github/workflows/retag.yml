@@ -55,6 +55,7 @@ jobs:
           minor_slice=$(echo "$latest_tag" | cut -d '.' -f 2)
           patch_slice=$(echo "$latest_tag" | cut -d '.' -f 3)
           new_tag=0
+          echo "slices: $major_slice.$minor_slice.$patch_slice"
 
           case $label in
             patch)
