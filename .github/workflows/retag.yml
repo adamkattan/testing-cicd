@@ -52,9 +52,7 @@ jobs:
           echo "latest tag: $latest_tag"
           
           latest_tag="${latest_tag#v}"
-          major_slice=$(echo "$latest_tag" | cut -d '.' -f 1)
-          minor_slice=$(echo "$latest_tag" | cut -d '.' -f 2)
-          patch_slice=$(echo "$latest_tag" | cut -d '.' -f 3)
+          IFS='.' read -r major_slice minor_slice patch_slice <<< "$latest_tag"
 
           # Set default values if any part is missing
           major_slice=${major_slice:-0}
