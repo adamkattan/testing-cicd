@@ -2,12 +2,13 @@ name: Retag this repository
 
 # Execute this workflow after merging to *main*
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types:
+      - closed
 
 jobs:
   retag:
+    if: github.event.pull_request.merged
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
