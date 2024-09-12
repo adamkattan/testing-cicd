@@ -40,7 +40,6 @@ jobs:
             push_tag $pushed_tag_major_version
           }
 
-          echo ${{ github.event.pull_request.head }} | jq -r '. | tojson'
           echo ${{ toJson(github.event.pull_request.head) }} 
           label=$(echo ${{ toJson(github.event.pull_request.head) }} | jq -r 'labels.[0].name')
 
