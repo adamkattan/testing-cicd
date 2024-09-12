@@ -40,7 +40,8 @@ jobs:
             push_tag $pushed_tag_major_version
           }
 
-          echo "${{ toJson(github.event.pull_request.head) }}"
+          echo $GITHUB_REF
+          echo "${{ toJson(github.event.pull_request) }}"
           pr_number=$(echo ${{ github.event.pull_request.head.ref }} | awk -F'/' '{print $3}')
           echo $pr_number
           label=$(gh api --jq '.labels.[].name' /repos/adamkattan/testing-cicd/pulls/$pr_number)
