@@ -37,63 +37,104 @@ jobs:
 
       - name: git clone
         shell: bash
+        run: git clone -b main https://svcqtest:${{ secrets.GIT_TOKEN }}@github.com/adamkattan/testing-cicd.git .
+  
+      - name: make a new file
+        shell: bash
         run: |
-          git tag v0.99.99
-          git push https://x-access-token:${GITHUB_TOKEN}@github.com/adamkattan/testing-cicd.git --tags
-          exit 0
-          push_tag() {
-            local tag_to_push=$1
-            git tag "$tag_to_push" || { echo "Failed to create tag $tag_to_push"; exit 1; }
-            git push origin "$tag_to_push" || { echo "Failed to push tag $tag_to_push"; exit 1; }
-            echo "tag: $tag_to_push was pushed successfully."
-          }
-          retag_major() {
-            local pushed_tag_major_version=$1
+          touch a.txt
+  
+      - name: commit and push
+        shell: bash
+        run: |
+          git checkout -b temp
+          git add .
+          git commit -m "updated version to XXX"
+          git push origin temp --force
+          sleep 5
+  
+      - name: Create Pull Request
+        id: pr
+        uses: diillson/auto-pull-request@v1.0.1
+        with:
+          github_token: ${{ secrets.GIT_TOKEN }}
+          source_branch: "temp"
+          destination_branch: "main"
+          pr_title: ${{ inputs.pr-title }}
+  
+        ## Write for matrix outputs workaround
+      - uses: cloudposse/github-action-matrix-outputs-write@v1
+        id: out
+        with:
+          matrix-step-name: ${{ github.job }}
+          matrix-key: "testing-cicd"
+          outputs: |-
+            include: ${{ steps.pr.outputs.pr_number }}
+  
+      - name: print link
+        shell: bash
+        run: echo link https://github.com/adamkattan/testing-cicd/pull/${{ steps.pr.outputs.pr_number }}/files
 
-            git tag -d "$pushed_tag_major_version" || { echo "Failed to delete tag $pushed_tag_major_version"; exit 1; }
-            git push origin --delete "$pushed_tag_major_version" || { echo "Failed to push delete for tag $pushed_tag_major_version"; exit 1; }
-            echo "tag: $tag_to_push was pushed_tag_major_version successfully."
 
-            push_tag $pushed_tag_major_version
-          }
+      # - name: git clone
+      #   shell: bash
+      #   run: |
+      #     git tag v0.99.99
+      #     git push https://x-access-token:${GITHUB_TOKEN}@github.com/adamkattan/testing-cicd.git --tags
+      #     exit 0
+      #     push_tag() {
+      #       local tag_to_push=$1
+      #       git tag "$tag_to_push" || { echo "Failed to create tag $tag_to_push"; exit 1; }
+      #       git push origin "$tag_to_push" || { echo "Failed to push tag $tag_to_push"; exit 1; }
+      #       echo "tag: $tag_to_push was pushed successfully."
+      #     }
+      #     retag_major() {
+      #       local pushed_tag_major_version=$1
 
-          label=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[0].name')
+      #       git tag -d "$pushed_tag_major_version" || { echo "Failed to delete tag $pushed_tag_major_version"; exit 1; }
+      #       git push origin --delete "$pushed_tag_major_version" || { echo "Failed to push delete for tag $pushed_tag_major_version"; exit 1; }
+      #       echo "tag: $tag_to_push was pushed_tag_major_version successfully."
 
-          echo "Triggering actor - ${{ github.triggering_actor }}"
-          echo "Labels: $label"
+      #       push_tag $pushed_tag_major_version
+      #     }
 
-          # this will get the latest_tag
-          latest_tag=$(git tag | sort -Vr | head -n 1)
-          echo "latest tag: $latest_tag"
+      #     label=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[0].name')
+
+      #     echo "Triggering actor - ${{ github.triggering_actor }}"
+      #     echo "Labels: $label"
+
+      #     # this will get the latest_tag
+      #     latest_tag=$(git tag | sort -Vr | head -n 1)
+      #     echo "latest tag: $latest_tag"
           
-          latest_tag="${latest_tag#v}"
-          IFS='.' read -r major_slice minor_slice patch_slice <<< "$latest_tag"
+      #     latest_tag="${latest_tag#v}"
+      #     IFS='.' read -r major_slice minor_slice patch_slice <<< "$latest_tag"
 
-          # Set default values if any part is missing
-          major_slice=${major_slice:-0}
-          minor_slice=${minor_slice:-0}
-          patch_slice=${patch_slice:-0}
-          echo "slices: $major_slice.$minor_slice.$patch_slice"
+      #     # Set default values if any part is missing
+      #     major_slice=${major_slice:-0}
+      #     minor_slice=${minor_slice:-0}
+      #     patch_slice=${patch_slice:-0}
+      #     echo "slices: $major_slice.$minor_slice.$patch_slice"
 
-          case $label in
-            patch)
-              new_tag="v$major_slice.$minor_slice.$((patch_slice + 1))"
-              push_tag $new_tag
-              retag_major "v$major_slice"
-              ;;
-            minor)
-              new_tag="v$major_slice.$((minor_slice + 1)).0"
-              push_tag $new_tag
-              retag_major "v$major_slice"
-              ;;
-            major)
-              new_tag="v$((major_slice + 1))"
-              push_tag $new_tag
-              ;;
-            *)
-              echo "Please specify label, choose only ONE from: major, minor, patch."
-              ;;
-          esac
+      #     case $label in
+      #       patch)
+      #         new_tag="v$major_slice.$minor_slice.$((patch_slice + 1))"
+      #         push_tag $new_tag
+      #         retag_major "v$major_slice"
+      #         ;;
+      #       minor)
+      #         new_tag="v$major_slice.$((minor_slice + 1)).0"
+      #         push_tag $new_tag
+      #         retag_major "v$major_slice"
+      #         ;;
+      #       major)
+      #         new_tag="v$((major_slice + 1))"
+      #         push_tag $new_tag
+      #         ;;
+      #       *)
+      #         echo "Please specify label, choose only ONE from: major, minor, patch."
+      #         ;;
+      #     esac
 
-      - name: Print tags
-        run: git ls-remote --tags origin
+      # - name: Print tags
+      #   run: git ls-remote --tags origin
