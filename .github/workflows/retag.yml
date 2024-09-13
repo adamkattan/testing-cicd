@@ -75,8 +75,10 @@ jobs:
               retag_major "v$major_slice"
               ;;
             major)
-              new_tag="v$((major_slice + 1))"
+              new_tag="v$((major_slice + 1)).0.0"
               push_tag $new_tag
+              new_major_tag="v$((major_slice + 1))"
+              push_tag $new_major_tag
               ;;
             *)
               echo "Please specify label, choose only ONE from: major, minor, patch."
