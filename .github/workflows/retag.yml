@@ -27,13 +27,13 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GIT_TOKEN }}
 
-      - name: Configure git credentials
-        uses: OleksiyRudenko/gha-git-credentials@v2
-        with:
-          token: '${{ secrets.GIT_TOKEN }}'
-          name: 'svcqtest'
-          actor: 'svcqtest'
-          email: 'svc_github_qtest@tricentis.com'
+      # - name: Configure git credentials
+      #   uses: OleksiyRudenko/gha-git-credentials@v2
+      #   with:
+      #     token: '${{ secrets.GIT_TOKEN }}'
+      #     name: 'svcqtest'
+      #     actor: 'svcqtest'
+      #     email: 'svc_github_qtest@tricentis.com'
 
       - name: git clone
         shell: bash
