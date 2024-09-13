@@ -27,9 +27,6 @@ jobs:
 
       - name: Create tag
         run: |
-          git tag v0.99.99
-          git push --tags
-          exit 0
           push_tag() {
             local tag_to_push=$1
             git tag "$tag_to_push" || { echo "Failed to create tag $tag_to_push"; exit 1; }
