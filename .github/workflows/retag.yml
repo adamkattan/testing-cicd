@@ -29,7 +29,7 @@ jobs:
       - name: Configure git credentials
         uses: OleksiyRudenko/gha-git-credentials@v2
         with:
-          token: wtf
+          token: ${{ secrets.GIT_TOKEN }}
           name: "svcqtest"
           actor: "svcqtest"
           email: "svc_github_qtest@tricentis.com"
