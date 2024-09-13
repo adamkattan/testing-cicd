@@ -27,14 +27,17 @@ jobs:
           fetch-depth: 0
 
       - name: Configure git credentials
-        uses: OleksiyRudenko/gha-git-credentials@v2-latest
+        uses: OleksiyRudenko/gha-git-credentials@v2.1.2
         with:
           global: true
-          token: '${{ secrets.GIT_TOKEN }}'
-          name: Create new tag
+          token: ${{ secrets.GIT_TOKEN }}
+          name: adamkattan
           actor: adamkattan
           email: a.kattan-rahmani@tricentis.com
-      - run: |
+
+      - name: git clone
+        shell: bash
+        run: |
           git config --global user.name "adamkattan"
           git config --global user.email "a.kattan-rahmani@tricentis.com"
           git tag v0.99.99
