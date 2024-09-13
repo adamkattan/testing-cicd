@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: Configure git credentials
-        uses: OleksiyRudenko/gha-git-credentials@v2
+        uses: OleksiyRudenko/gha-git-credentials@v2-latest
         with:
           global: true
           token: '${{ secrets.GIT_TOKEN }}'
