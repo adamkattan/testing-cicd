@@ -21,10 +21,10 @@ jobs:
       #   with:
       #     ssh-private-key: ${{ secrets.GIT_TOKEN }}
       
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      # - name: Checkout repository
+      #   uses: actions/checkout@v4
+      #   with:
+      #     fetch-depth: 0
 
       - name: Configure git credentials
         uses: OleksiyRudenko/gha-git-credentials@v2
