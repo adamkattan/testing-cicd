@@ -31,9 +31,9 @@ jobs:
         with:
           global: true
           token: '${{ secrets.GIT_TOKEN }}'
-          name: svcqtest
-          actor: svcqtest
-          email: svc_github_qtest@tricentis.com
+          name: 'svcqtest'
+          actor: 'svcqtest'
+          email: 'svc_github_qtest@tricentis.com'
 
       - name: git clone
         shell: bash
