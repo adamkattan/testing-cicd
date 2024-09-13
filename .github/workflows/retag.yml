@@ -30,7 +30,7 @@ jobs:
         uses: OleksiyRudenko/gha-git-credentials@v2.1.2
         with:
           global: true
-          token: ${{ secrets.GIT_TOKEN }}
+          token: '${{ secrets.GIT_TOKEN }}'
           name: svcqtest
           actor: svcqtest
           email: svc_github_qtest@tricentis.com
