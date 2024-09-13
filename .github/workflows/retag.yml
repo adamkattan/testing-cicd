@@ -2,6 +2,7 @@ name: Create tag
 
 # Execute this workflow after merging to *main*
 on:
+  push: # REMOVE!
   pull_request:
     types:
       - closed
@@ -10,20 +11,40 @@ on:
 
 jobs:
   retag:
-    if: github.event.pull_request.merged
+    # if: github.event.pull_request.merged # uncomment !
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GIT_TOKEN }}
     permissions:
       contents: write
     steps:
+      # - name: Install SSH Client
+      #   uses: webfactory/ssh-agent@v0.9.0
+      #   with:
+      #     ssh-private-key: ${{ secrets.GIT_TOKEN }}
+      
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GIT_TOKEN }}
 
+      - name: Configure git credentials
+        uses: OleksiyRudenko/gha-git-credentials@v2
+        with:
+          global: true
+          token: '${{ secrets.GIT_TOKEN }}'
+          name: Create new tag
+          actor: tag-bot
+          email: tag-bot@tricentis.com
+      
       - name: Create tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
+          git config --global user.name "tag-bot"
+          git config --global user.email "tag-bot@tricentis.com"
+          git tag v0.99.99
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/adamkattan/testing-cicd.git --tags
+          exit 0
           push_tag() {
             local tag_to_push=$1
             git tag "$tag_to_push" || { echo "Failed to create tag $tag_to_push"; exit 1; }
@@ -56,8 +77,6 @@ jobs:
           major_slice=${major_slice:-0}
           minor_slice=${minor_slice:-0}
           patch_slice=${patch_slice:-0}
-          echo "slices: $major_slice.$minor_slice.$patch_slice"
-
           echo "slices: $major_slice.$minor_slice.$patch_slice"
 
           case $label in
