@@ -92,7 +92,7 @@ jobs:
               retag_major "$prefix_label$tag_prefix$major_slice"
               ;;
             minor)
-              new_tag="$prefix_label-$tag_prefix$major_slice.$((minor_slice + 1)).0"
+              new_tag="$prefix_label$tag_prefix$major_slice.$((minor_slice + 1)).0"
               push_tag $new_tag
               retag_major "$prefix_label$tag_prefix$major_slice"
               ;;
