@@ -48,9 +48,7 @@ jobs:
             push_tag $pushed_tag_major_version
           }
 
-          labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name) | join(",")')
-          IFS=',' read -ra labels <<< "$labels"
-          for label in "${labels[@]}"; do
+          for label in "${github.event.pull_request.labels[@]}"; do
             echo "Label: $label"
           done
 
