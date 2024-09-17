@@ -28,8 +28,8 @@ jobs:
 
       - name: Create tag
         run: |
-          chmod +x ./.github/workflows/create-tag.sh
-          ./.github/workflows/create-tag.sh
+          chmod +x ./create-tag.sh
+          ./create-tag.sh
 
       - name: Print tags
         run: git ls-remote --tags origin
