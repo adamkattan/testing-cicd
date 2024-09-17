@@ -2,11 +2,12 @@ name: Create tag
 
 # Execute this workflow after merging to *main*
 on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
+  push:
+  # pull_request:
+  #   types:
+  #     - closed
+  #   branches:
+  #     - main
 
 jobs:
   create-tag:
@@ -26,7 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: Create tag
-        run: ./create-tag.sh
+        run: ./.github/workflows/script.sh
 
       - name: Print tags
         run: git ls-remote --tags origin
