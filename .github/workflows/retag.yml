@@ -69,7 +69,7 @@ jobs:
           done
           
           # this will get the latest_tag
-          latest_tag=$(git tag | sort -Vr | head -n 1)
+          latest_tag=$(git tag -l "${prefix_label}v*" | sort -Vr | head -n 1)
           echo "latest tag: $latest_tag"
           
           latest_tag="${latest_tag#wf-generic-build-deploy-v}"
