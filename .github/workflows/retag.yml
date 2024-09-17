@@ -72,7 +72,8 @@ jobs:
           latest_tag=$(git tag -l "${prefix_label}v*" | sort -Vr | head -n 1)
           echo "latest tag: $latest_tag"
           
-          latest_tag="${latest_tag#wf-generic-build-deploy-v}"
+          latest_tag="${latest_tag#$prefix_label}"
+          latest_tag="${latest_tag#v}"
           IFS='.' read -r major_slice minor_slice patch_slice <<< "$latest_tag"
 
           # Set default values if any part is missing
