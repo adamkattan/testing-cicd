@@ -3,6 +3,10 @@ name: Create tag
 # Execute this workflow after merging to *main*
 on:
   pull_request:
+    types:
+      - edited    # Includes edits, such as description changes
+      - opened    # Trigger when a new PR is opened
+      - synchronize 
     # types: TODO
     #   - closed
     # branches:
