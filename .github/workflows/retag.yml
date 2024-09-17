@@ -49,10 +49,11 @@ jobs:
           }
 
           labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name) | join(",")')
+          for label in $labels; do
+            echo "Label: $label"
+          done
 
           echo "Triggering actor - ${{ github.triggering_actor }}"
-          echo "Labels: $labels"
-          echo "First label: ${labels:0} Second label: ${labels:1}"
           # this will get the latest_tag
           latest_tag=$(git tag | sort -Vr | head -n 1)
           echo "latest tag: $latest_tag"
