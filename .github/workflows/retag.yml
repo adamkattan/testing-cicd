@@ -3,14 +3,14 @@ name: Create tag
 # Execute this workflow after merging to *main*
 on:
   pull_request:
-    # types:
+    # types: TODO
     #   - closed
     # branches:
     #   - main
 
 jobs:
   create-tag:
-    if: github.event.pull_request.merged
+    # if: github.event.pull_request.merged TODO
     runs-on: ubuntu-latest
     permissions:
       contents: write
