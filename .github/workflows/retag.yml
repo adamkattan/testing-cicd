@@ -27,7 +27,9 @@ jobs:
           fetch-depth: 0
 
       - name: Create tag
-        run: ./.github/workflows/create-tag.sh
+        run: |
+          chmod +x ./.github/workflows/create-tag.sh
+          ./.github/workflows/create-tag.sh
 
       - name: Print tags
         run: git ls-remote --tags origin
