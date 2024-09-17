@@ -4,13 +4,17 @@ name: Create tag
 on:
   pull_request:
     types:
-      - closed
-    branches:
-      - main
+      - edited    # Includes edits, such as description changes
+      - opened    # Trigger when a new PR is opened
+      - synchronize 
+    # types: TODO
+    #   - closed
+    # branches:
+    #   - main
 
 jobs:
   create-tag:
-    if: github.event.pull_request.merged
+    # if: github.event.pull_request.merged TODO
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -38,16 +42,32 @@ jobs:
 
             git tag -d "$pushed_tag_major_version" || { echo "Failed to delete tag $pushed_tag_major_version"; exit 1; }
             git push origin --delete "$pushed_tag_major_version" || { echo "Failed to push delete for tag $pushed_tag_major_version"; exit 1; }
-            echo "tag: $tag_to_push was pushed_tag_major_version successfully."
+            # TODO
+            echo "tag: $tag_to_push was pushed_tag_major_version successfully." 
 
             push_tag $pushed_tag_major_version
           }
 
-          label=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[0].name')
-
           echo "Triggering actor - ${{ github.triggering_actor }}"
-          echo "Labels: $label"
 
+          prefix_label=""
+          semver_label=""
+          for label in $(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name) | join(" ")'); do
+
+            case "$label" in
+              no-tag)
+                exit 0;
+                ;;
+              wf-generic-build-deploy)
+                prefix_label="$label-"
+                ;;
+              major|minor|patch)
+                semver_label=$label
+                ;;
+            esac
+
+          done
+          
           # this will get the latest_tag
           latest_tag=$(git tag | sort -Vr | head -n 1)
           echo "latest tag: $latest_tag"
@@ -62,22 +82,24 @@ jobs:
           echo "slices: $major_slice.$minor_slice.$patch_slice"
 
           echo "slices: $major_slice.$minor_slice.$patch_slice"
-
-          case $label in
+          
+          tag_prefix="v"
+          
+          case $semver_label in
             patch)
-              new_tag="v$major_slice.$minor_slice.$((patch_slice + 1))"
+              new_tag="$prefix_label$tag_prefix$major_slice.$minor_slice.$((patch_slice + 1))"
               push_tag $new_tag
-              retag_major "v$major_slice"
+              retag_major "$prefix_label$tag_prefix$major_slice"
               ;;
             minor)
-              new_tag="v$major_slice.$((minor_slice + 1)).0"
+              new_tag="$prefix_label$tag_prefix$major_slice.$((minor_slice + 1)).0"
               push_tag $new_tag
-              retag_major "v$major_slice"
+              retag_major "$prefix_label$tag_prefix$major_slice"
               ;;
             major)
-              new_tag="v$((major_slice + 1)).0.0"
+              new_tag="$prefix_label$tag_prefix$((major_slice + 1)).0.0"
               push_tag $new_tag
-              new_major_tag="v$((major_slice + 1))"
+              new_major_tag="$prefix_label$tag_prefix$((major_slice + 1))"
               push_tag $new_major_tag
               ;;
             *)
