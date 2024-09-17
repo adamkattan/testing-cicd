@@ -37,6 +37,8 @@ jobs:
             git push origin "$tag_to_push" || { echo "Failed to push tag $tag_to_push"; exit 1; }
             echo "tag: $tag_to_push was pushed successfully."
           }
+          push_tag "wf-generic-build-deploy-v4"
+          exit 0;
           retag_major() {
             local pushed_tag_major_version=$1
 
