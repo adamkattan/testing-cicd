@@ -59,7 +59,7 @@ jobs:
                 exit 0;
                 ;;
               wf-generic-build-deploy)
-                prefix_label=$label
+                prefix_label="$label-"
                 ;;
               major|minor|patch)
                 semver_label=$label
@@ -87,19 +87,19 @@ jobs:
           
           case $semver_label in
             patch)
-              new_tag="$prefix_label-$tag_prefix$major_slice.$minor_slice.$((patch_slice + 1))"
+              new_tag="$prefix_label$tag_prefix$major_slice.$minor_slice.$((patch_slice + 1))"
               push_tag $new_tag
-              retag_major "$prefix_label-$tag_prefix$major_slice"
+              retag_major "$prefix_label$tag_prefix$major_slice"
               ;;
             minor)
               new_tag="$prefix_label-$tag_prefix$major_slice.$((minor_slice + 1)).0"
               push_tag $new_tag
-              retag_major "$prefix_label-$tag_prefix$major_slice"
+              retag_major "$prefix_label$tag_prefix$major_slice"
               ;;
             major)
-              new_tag="$prefix_label-$tag_prefix$((major_slice + 1)).0.0"
+              new_tag="$prefix_label$tag_prefix$((major_slice + 1)).0.0"
               push_tag $new_tag
-              new_major_tag="$prefix_label-$tag_prefix$((major_slice + 1))"
+              new_major_tag="$prefix_label$tag_prefix$((major_slice + 1))"
               push_tag $new_major_tag
               ;;
             *)
