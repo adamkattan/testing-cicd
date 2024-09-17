@@ -42,12 +42,13 @@ jobs:
 
             git tag -d "$pushed_tag_major_version" || { echo "Failed to delete tag $pushed_tag_major_version"; exit 1; }
             git push origin --delete "$pushed_tag_major_version" || { echo "Failed to push delete for tag $pushed_tag_major_version"; exit 1; }
-            echo "tag: $tag_to_push was pushed_tag_major_version successfully."
+            # TODO
+            echo "tag: $tag_to_push was pushed_tag_major_version successfully." 
 
             push_tag $pushed_tag_major_version
           }
 
-          labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[]')
+          labels=$(echo `${{ toJson(github.event.pull_request.labels) }}` | jq -r '.[]')
 
           echo "Triggering actor - ${{ github.triggering_actor }}"
           echo "Labels: $labels"
