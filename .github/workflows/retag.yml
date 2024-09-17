@@ -48,11 +48,26 @@ jobs:
             push_tag $pushed_tag_major_version
           }
 
-          for label in $(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name) | join(" ")'); do
-            echo "Label: $label"
-          done
-
           echo "Triggering actor - ${{ github.triggering_actor }}"
+
+          prefix_label=""
+          semver_label=""
+          for label in $(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name) | join(" ")'); do
+
+            case "$label" in
+              no-tag)
+                exit 0;
+                ;;
+              wf-generic-build-deploy)
+                prefix_label=$label
+                ;;
+              major|minor|patch)
+                semver_label=$label
+                ;;
+            esac
+
+          done
+          
           # this will get the latest_tag
           latest_tag=$(git tag | sort -Vr | head -n 1)
           echo "latest tag: $latest_tag"
@@ -67,22 +82,24 @@ jobs:
           echo "slices: $major_slice.$minor_slice.$patch_slice"
 
           echo "slices: $major_slice.$minor_slice.$patch_slice"
-
-          case $label in
+          
+          tag_prefix="v"
+          
+          case $semver_label in
             patch)
-              new_tag="v$major_slice.$minor_slice.$((patch_slice + 1))"
+              new_tag="$prefix_label-$tag_prefix$major_slice.$minor_slice.$((patch_slice + 1))"
               push_tag $new_tag
-              retag_major "v$major_slice"
+              retag_major "$prefix_label-$tag_prefix$major_slice"
               ;;
             minor)
-              new_tag="v$major_slice.$((minor_slice + 1)).0"
+              new_tag="$prefix_label-$tag_prefix$major_slice.$((minor_slice + 1)).0"
               push_tag $new_tag
-              retag_major "v$major_slice"
+              retag_major "$prefix_label-$tag_prefix$major_slice"
               ;;
             major)
-              new_tag="v$((major_slice + 1)).0.0"
+              new_tag="$prefix_label-$tag_prefix$((major_slice + 1)).0.0"
               push_tag $new_tag
-              new_major_tag="v$((major_slice + 1))"
+              new_major_tag="$prefix_label-$tag_prefix$((major_slice + 1))"
               push_tag $new_major_tag
               ;;
             *)
