@@ -1,0 +1,39 @@
+name: Tag requirement
+
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+
+jobs:
+  tag-require:
+    uses: mheap/github-action-required-labels@v5
+    with:
+      mode: exactly
+      token: ${{ secrets.GIT_TOKEN }}
+      count: 1
+      labels: |
+        patch
+        minor
+        major
+        no-tag
+      add_comment: true
+
+  semver-require:
+    runs-on: ubuntu-latest
+    steps:
+      - name: If semver -> check additional tag
+        run: |
+          LABELS=${{ toJson(github.event.pull_request.labels) }}
+          echo $LABELS.*.name
+          for label in $(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name) | join(" ")'); do
+
+            case "$label" in
+                major|minor|patch)
+                  # check if number of total labels are 2
+                ;;
+                no-tag)
+                  # check if number of total labels are 1
+                ;;
+            esac
+
+          done
