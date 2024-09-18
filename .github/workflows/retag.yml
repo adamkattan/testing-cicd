@@ -25,6 +25,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: mheap/github-action-required-labels@v5
+        with:
+          mode: exactly
+          count: 1
+          labels: |
+            patch
+            minor
+            major
+          add_comment: true
+
       - name: Create tag
         run: |
           push_tag() {
