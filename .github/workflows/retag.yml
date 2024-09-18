@@ -33,6 +33,7 @@ jobs:
             patch
             minor
             major
+            no-tag
           add_comment: true
 
       - name: Create tag
