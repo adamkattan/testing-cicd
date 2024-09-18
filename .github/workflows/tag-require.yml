@@ -29,9 +29,10 @@ jobs:
       - name: If semver -> check additional tag
         run: |
           labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name)')
-          echo "$labels -- Number of labels: ${#labels}"
+          labels_size=$(echo $labels | jq '. | length')
+          echo "$labels -- Number of labels: $labels_size"
           for label in $labels; do
-
+            echo $label
             case "$label" in
                 major|minor|patch)
                   # check if number of total labels are 2
