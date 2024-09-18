@@ -36,10 +36,14 @@ jobs:
             echo $label
             case "$label" in
                 major|minor|patch)
-                  # check if number of total labels are 2
+                  if [ $labels_size -ne 2 ]; then
+                    exit 1
+                  fi
                 ;;
                 no-tag)
-                  # check if number of total labels are 1
+                  if [ $labels_size -ne 1 ]; then
+                    exit 1
+                  fi
                 ;;
             esac
 
