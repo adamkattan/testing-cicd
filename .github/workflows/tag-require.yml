@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: If semver -> check additional tag
         run: |
-          labels=$('${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name) | join(" ")')
+          labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name) | join(" ")')
           echo $labels
           for label in $labels; do
 
