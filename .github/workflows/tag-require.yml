@@ -31,7 +31,8 @@ jobs:
           labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name)')
           labels_size=$(echo $labels | jq '. | length')
           echo "$labels -- Number of labels: $labels_size"
-          for label in $labels; do
+
+          for label in $(echo $labels | jq -r 'join(" ")'); do
             echo $label
             case "$label" in
                 major|minor|patch)
