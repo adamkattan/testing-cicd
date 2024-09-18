@@ -14,7 +14,6 @@ jobs:
       - uses: mheap/github-action-required-labels@v5
         with:
           mode: exactly
-          token: ${{ secrets.GIT_TOKEN }}
           count: 1
           labels: |
             patch
@@ -25,6 +24,7 @@ jobs:
 
   semver-require:
     runs-on: ubuntu-latest
+    needs: tag-require
     steps:
       - name: If semver -> check additional tag
         run: |
