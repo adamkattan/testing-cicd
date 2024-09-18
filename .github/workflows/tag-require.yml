@@ -6,17 +6,22 @@ on:
 
 jobs:
   tag-require:
-    uses: mheap/github-action-required-labels@v5
-    with:
-      mode: exactly
-      token: ${{ secrets.GIT_TOKEN }}
-      count: 1
-      labels: |
-        patch
-        minor
-        major
-        no-tag
-      add_comment: true
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: mheap/github-action-required-labels@v5
+        with:
+          mode: exactly
+          token: ${{ secrets.GIT_TOKEN }}
+          count: 1
+          labels: |
+            patch
+            minor
+            major
+            no-tag
+          add_comment: true
 
   semver-require:
     runs-on: ubuntu-latest
