@@ -28,11 +28,24 @@ jobs:
     steps:
       - name: Check Dependent labels
         run: |
-          labels=( $(echo "${{ toJson(github.event.pull_request.labels) }}" | jq -r '.[] | .name') )
-          if [[ ${labels[*]} =~ ^(major|minor|patch)$ && ${#labels[@]} -ne 2 ]]; then
-            echo "When using major/minor/patch, then you need to specify its prefix using another label!"
-            exit 1
-          elif [[ ${labels[*]} == "no-tag" && ${#labels[@]} -ne 1 ]]; then
-            echo "You can't use 'no-tag' label with another label!"
-            exit 1
-          fi
+          labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name)')
+          labels_size=$(echo $labels | jq '. | length')
+
+          for label in $(echo $labels | jq -r 'join(" ")'); do
+
+            case "$label" in
+                major|minor|patch)
+                  if [ $labels_size -ne 2 ]; then
+                    echo "When using major/minor/patch, then you need to specify its prefix using another label!"
+                    exit 1
+                  fi
+                ;;
+                no-tag)
+                  if [ $labels_size -ne 1 ]; then
+                    echo "You can't use 'no-tag' label with another label!"
+                    exit 1
+                  fi
+                ;;
+            esac
+
+          done
