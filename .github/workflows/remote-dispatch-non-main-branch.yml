@@ -1,6 +1,7 @@
 name: Remote dispatch test - NON MAIN BRANCH
 
 on:
+  push: 
   repository_dispatch:
     types: [trigger-action]
 
