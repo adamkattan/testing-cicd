@@ -1,0 +1,11 @@
+name: Remote dispatch test - NON MAIN BRANCH
+
+on:
+  repository_dispatch:
+    types: [trigger-action]
+
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "${{ github.event.client_payload.action }} -- NON MAIN BRANCH!!"
