@@ -1,0 +1,51 @@
+name: Check labels
+
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+
+jobs:
+  label-require:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: mheap/github-action-required-labels@v5
+        with:
+          mode: exactly
+          count: 1
+          labels: |
+            patch
+            minor
+            major
+            no-tag
+          add_comment: true
+
+  check-dependent-label:
+    runs-on: ubuntu-latest
+    needs: label-require
+    steps:
+      - name: Check Dependent labels
+        run: |
+          labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r 'map(.name)')
+          labels_size=$(echo $labels | jq '. | length')
+
+          for label in $(echo $labels | jq -r 'join(" ")'); do
+
+            case "$label" in
+                major|minor|patch)
+                  if [ $labels_size -ne 2 ]; then
+                    echo "When using major/minor/patch, then you need to specify its prefix using another label!"
+                    exit 1
+                  fi
+                ;;
+                no-tag)
+                  if [ $labels_size -ne 1 ]; then
+                    echo "You can't use 'no-tag' label with another label!"
+                    exit 1
+                  fi
+                ;;
+            esac
+
+          done
